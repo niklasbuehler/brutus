@@ -44,7 +44,7 @@ def decode(encodedText):
         decodedAscii = encodedAscii - key
 
         # wrap shift
-        if(decodedAscii < ord("A") or decodedAscii ):
+        if(decodedAscii < ord("A")):
             decodedAscii += 26
         if(decodedAscii > ord("Z")):
             decodedAscii -= 26
@@ -53,12 +53,65 @@ def decode(encodedText):
     decodedText = "".join(decodedCharacters)
     return decodedText
 
+def encode(decodedText, key):
+    characters = getCharacters(decodedText)
+
+    encodedCharacters = []
+    for character in characters:
+        decodedAscii = ord(character)
+
+        # only shift letters
+        if(decodedAscii < ord("A") or decodedAscii > ord("Z")):
+            encodedCharacters.append(character)
+            continue
+
+        encodedAscii = decodedAscii + key
+
+        # wrap shift
+        if(encodedAscii < ord("A")):
+            encodedAscii += 26
+        if(encodedAscii > ord("Z")):
+            encodedAscii -= 26
+        encodedCharacters.append(chr(encodedAscii))
+
+    encodedText = "".join(encodedCharacters)
+    return encodedText
+
+
 # main method
 def main():
     # sys.argv[0] contains the scriptname
-    path = sys.argv[1]
-    encodedText = loadText(path)
-    decodedText = decode(encodedText)
-    print(decodedText)
+    args = len(sys.argv)
+
+    if(args == 1):
+        print("missing arguments")
+        print("add option -h for help")
+        return
+
+    command = sys.argv[1]
+
+    if(command == "-d"):
+        if(args != 3):
+            print("missing arguments")
+            print("add option -h for help")
+            return
+        path = sys.argv[2]
+        encodedText = loadText(path)
+        decodedText = decode(encodedText)
+        print(decodedText)
+    elif(command == "-e"):
+        if(args != 4):
+            print("missing arguments")
+            print("add option -h for help")
+            return
+        path = sys.argv[2]
+        key = int(sys.argv[3])
+        decodedText = loadText(path)
+        encodedText = encode(decodedText, key)
+        print(encodedText)
+    elif(command == "-h" or command == "--help"):
+        print("options:")
+        print("decoding: -d /path/to/file.txt")
+        print("encoding: -e /path/to/file.txt key")
 
 main()
